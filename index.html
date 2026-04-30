@@ -1,0 +1,2040 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Discipline — Take Control of Your Time</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --black: #0F172A;
+    --white: #F1F5F9;
+    --red: #EF4444;
+    --red-dim: #B91C1C;
+    --grey: #1E293B;
+    --grey2: #334155;
+    --muted: #94A3B8;
+    --accent: #3B82F6;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: 'Instrument Sans', sans-serif;
+    overflow-x: hidden;
+    cursor: crosshair;
+  }
+
+  /* ── NOISE OVERLAY ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 999;
+    opacity: 0.5;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 48px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    background: rgba(15,23,42,0.92);
+    backdrop-filter: blur(12px);
+  }
+
+  .logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    letter-spacing: 0.08em;
+    color: var(--white);
+    text-decoration: none;
+  }
+
+  .logo span { color: var(--red); }
+
+  nav ul {
+    display: flex;
+    gap: 36px;
+    list-style: none;
+  }
+
+  nav a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 13px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    font-family: 'DM Mono', monospace;
+    transition: color 0.2s;
+  }
+
+  nav a:hover { color: var(--white); }
+
+  .nav-cta {
+    background: var(--accent);
+    color: var(--white) !important;
+    padding: 10px 22px;
+    border-radius: 2px;
+    transition: background 0.2s !important;
+  }
+
+  .nav-cta:hover { background: #2563EB !important; color: var(--white) !important; }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    padding: 120px 48px 80px;
+    gap: 60px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::after {
+    content: '';
+    position: absolute;
+    right: -200px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 700px;
+    height: 700px;
+    background: radial-gradient(circle, rgba(59,130,246,0.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero-eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.2s forwards;
+  }
+
+  .hero-eyebrow::before {
+    content: '';
+    width: 32px;
+    height: 1px;
+    background: var(--accent);
+  }
+
+  .hero-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(72px, 9vw, 130px);
+    line-height: 0.92;
+    letter-spacing: 0.02em;
+    margin-bottom: 32px;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.35s forwards;
+  }
+
+  .hero-title .line2 { color: var(--red); }
+
+  .hero-desc {
+    font-size: 17px;
+    line-height: 1.65;
+    color: #94A3B8;
+    max-width: 480px;
+    margin-bottom: 44px;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.5s forwards;
+  }
+
+  .hero-actions {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.65s forwards;
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: var(--white);
+    padding: 16px 36px;
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    text-decoration: none;
+    border-radius: 2px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-primary::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(255,255,255,0.1);
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .btn-primary:hover::after { opacity: 1; }
+
+  .btn-ghost {
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: color 0.2s;
+    cursor: pointer;
+    border: none;
+    background: none;
+  }
+
+  .btn-ghost:hover { color: var(--white); }
+
+  .btn-ghost .arrow { transition: transform 0.2s; }
+  .btn-ghost:hover .arrow { transform: translateX(4px); }
+
+  /* ── PHONE MOCKUP ── */
+  .hero-visual {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    animation: fadeUp 0.9s 0.4s forwards;
+    position: relative;
+  }
+
+  .phone {
+    width: 260px;
+    background: #0F172A;
+    border-radius: 40px;
+    border: 2px solid #334155;
+    padding: 24px 16px;
+    box-shadow: 0 60px 100px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.06);
+    position: relative;
+    z-index: 2;
+  }
+
+  .phone-notch {
+    width: 80px;
+    height: 10px;
+    background: #000;
+    border-radius: 20px;
+    margin: 0 auto 20px;
+  }
+
+  .phone-screen {
+    background: #0B1120;
+    border-radius: 24px;
+    padding: 16px;
+    min-height: 420px;
+    overflow: hidden;
+  }
+
+  .ps-header {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+
+  .ps-credit {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 48px;
+    line-height: 1;
+    color: var(--white);
+    margin-bottom: 4px;
+  }
+
+  .ps-credit span { font-size: 18px; color: var(--muted); }
+
+  .ps-sub {
+    font-size: 11px;
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+    margin-bottom: 20px;
+  }
+
+  .ps-app {
+    background: #1E293B;
+    border-radius: 10px;
+    padding: 12px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border: 1px solid #1E293B;
+  }
+
+  .ps-app-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  .ps-app-info { flex: 1; }
+  .ps-app-name {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--white);
+    margin-bottom: 5px;
+  }
+
+  .ps-bar-wrap {
+    height: 4px;
+    background: #334155;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .ps-bar {
+    height: 100%;
+    border-radius: 4px;
+    background: var(--accent);
+  }
+
+  .ps-app-time {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    flex-shrink: 0;
+  }
+
+  .ps-blocked {
+    background: rgba(239,68,68,0.12);
+    border: 1px solid rgba(239,68,68,0.3);
+    border-radius: 10px;
+    padding: 12px;
+    text-align: center;
+    margin-top: 16px;
+  }
+
+  .ps-blocked-icon { font-size: 24px; margin-bottom: 4px; }
+
+  .ps-blocked-text {
+    font-size: 11px;
+    color: var(--red);
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 0.06em;
+  }
+
+  /* animated bars */
+  .bar-anim { animation: barFill 2.5s ease-out forwards; }
+
+  @keyframes barFill {
+    from { width: 0; }
+  }
+
+  .phone-glow {
+    position: absolute;
+    inset: -40px;
+    background: radial-gradient(ellipse, rgba(230,50,37,0.15) 0%, transparent 65%);
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* ── STATS STRIP ── */
+  .stats {
+    border-top: 1px solid rgba(255,255,255,0.06);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    padding: 0 48px;
+  }
+
+  .stat {
+    padding: 40px 0;
+    border-right: 1px solid rgba(255,255,255,0.06);
+    text-align: center;
+  }
+
+  .stat:last-child { border-right: none; }
+
+  .stat-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 56px;
+    line-height: 1;
+    color: var(--accent);
+    margin-bottom: 6px;
+  }
+
+  .stat-label {
+    font-size: 12px;
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  /* ── PROBLEM SECTION ── */
+  .section {
+    padding: 100px 48px;
+  }
+
+  .section-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .section-tag::before {
+    content: '';
+    width: 24px;
+    height: 1px;
+    background: var(--accent);
+  }
+
+  .section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(48px, 6vw, 80px);
+    line-height: 0.95;
+    margin-bottom: 24px;
+  }
+
+  /* ── PROBLEM GRID ── */
+  .problems {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+    margin-top: 60px;
+  }
+
+  .problem-card {
+    background: var(--grey);
+    padding: 48px;
+    position: relative;
+    overflow: hidden;
+    transition: background 0.3s;
+  }
+
+  .problem-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 3px;
+    height: 0;
+    background: var(--accent);
+    transition: height 0.4s;
+  }
+
+  .problem-card:hover::before { height: 100%; }
+  .problem-card:hover { background: #1E293B; }
+
+  .problem-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 80px;
+    color: rgba(255,255,255,0.04);
+    position: absolute;
+    right: 24px;
+    top: 16px;
+    line-height: 1;
+    pointer-events: none;
+  }
+
+  .problem-icon { font-size: 32px; margin-bottom: 16px; }
+
+  .problem-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    letter-spacing: 0.03em;
+    margin-bottom: 12px;
+  }
+
+  .problem-desc {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+
+  /* ── HOW IT WORKS ── */
+  .how {
+    padding: 100px 48px;
+    background: var(--grey);
+  }
+
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    margin-top: 60px;
+  }
+
+  .step {
+    background: var(--black);
+    padding: 48px 40px;
+    position: relative;
+  }
+
+  .step-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 120px;
+    color: rgba(230,50,37,0.07);
+    line-height: 1;
+    position: absolute;
+    top: 0;
+    right: 20px;
+    pointer-events: none;
+  }
+
+  .step-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 2px;
+    background: rgba(59,130,246,0.12);
+    border: 1px solid rgba(59,130,246,0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    margin-bottom: 24px;
+  }
+
+  .step-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 30px;
+    letter-spacing: 0.02em;
+    margin-bottom: 12px;
+  }
+
+  .step-desc {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+
+  /* ── FEATURES ── */
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    margin-top: 60px;
+  }
+
+  .feature {
+    padding: 40px;
+    border: 1px solid rgba(255,255,255,0.05);
+    transition: border-color 0.3s, background 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .feature::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 1px;
+    background: var(--accent);
+    transform: scaleX(0);
+    transition: transform 0.4s;
+    transform-origin: left;
+  }
+
+  .feature:hover::after { transform: scaleX(1); }
+  .feature:hover { border-color: rgba(59,130,246,0.2); background: rgba(59,130,246,0.03); }
+
+  .feature-badge {
+    display: inline-block;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    border: 1px solid rgba(59,130,246,0.3);
+    padding: 3px 8px;
+    border-radius: 2px;
+    margin-bottom: 20px;
+  }
+
+  .feature-icon { font-size: 28px; margin-bottom: 16px; }
+
+  .feature-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 26px;
+    letter-spacing: 0.03em;
+    margin-bottom: 10px;
+  }
+
+  .feature-desc {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+
+  /* ── USP SECTION ── */
+  .usp {
+    padding: 100px 48px;
+    background: #1D4ED8;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .usp::before {
+    content: 'DISCIPLINE';
+    position: absolute;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 280px;
+    color: rgba(0,0,0,0.1);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    white-space: nowrap;
+    pointer-events: none;
+  }
+
+  .usp .section-tag { color: rgba(255,255,255,0.8); }
+  .usp .section-tag::before { background: rgba(255,255,255,0.7); }
+
+  .usp .section-title { color: var(--white); }
+
+  .usp-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+    margin-top: 48px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .usp-item {
+    background: rgba(0,0,0,0.15);
+    padding: 28px 32px;
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    transition: background 0.2s;
+  }
+
+  .usp-item:hover { background: rgba(0,0,0,0.25); }
+
+  .usp-check {
+    font-size: 20px;
+    margin-top: 2px;
+    flex-shrink: 0;
+  }
+
+  .usp-text strong {
+    display: block;
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 4px;
+    color: var(--white);
+  }
+
+  .usp-text span {
+    font-size: 13px;
+    color: rgba(255,255,255,0.65);
+    line-height: 1.5;
+  }
+
+  /* ── CTA ── */
+  .cta-section {
+    padding: 120px 48px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cta-section::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(59,130,246,0.1) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .cta-section .section-tag {
+    justify-content: center;
+  }
+
+  .cta-section .section-tag::before { display: none; }
+
+  .cta-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(60px, 8vw, 110px);
+    line-height: 0.92;
+    margin-bottom: 24px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .cta-desc {
+    font-size: 16px;
+    color: var(--muted);
+    max-width: 440px;
+    margin: 0 auto 44px;
+    line-height: 1.7;
+    position: relative;
+    z-index: 1;
+  }
+
+  .cta-actions {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid rgba(255,255,255,0.06);
+    padding: 40px 48px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .footer-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    color: var(--white);
+    letter-spacing: 0.06em;
+  }
+
+  .footer-logo span { color: var(--red); }
+
+  .footer-copy {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(28px);
+    transition: opacity 0.7s, transform 0.7s;
+  }
+
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ── TICKER ── */
+  .ticker {
+    background: #1D4ED8;
+    overflow: hidden;
+    padding: 12px 0;
+    white-space: nowrap;
+  }
+
+  .ticker-inner {
+    display: inline-block;
+    animation: ticker 20s linear infinite;
+  }
+
+  .ticker-item {
+    display: inline-block;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 16px;
+    letter-spacing: 0.1em;
+    color: var(--white);
+    padding: 0 32px;
+    opacity: 0.85;
+  }
+
+  .ticker-item span { color: rgba(255,255,255,0.4); padding: 0 8px; }
+
+  @keyframes ticker {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 900px) {
+    nav { padding: 16px 24px; }
+    nav ul { display: none; }
+    .hero { grid-template-columns: 1fr; padding: 100px 24px 60px; }
+    .hero-visual { order: -1; }
+    .phone { width: 220px; }
+    .stats { grid-template-columns: 1fr 1fr; }
+    .problems, .steps, .features-grid, .usp-list { grid-template-columns: 1fr; }
+    .section, .how, .usp, .cta-section { padding: 60px 24px; }
+    footer { flex-direction: column; gap: 12px; text-align: center; padding: 32px 24px; }
+  }
+</style>
+</head>
+<body>
+   <!-- Load config FIRST -->
+
+<script type="module" src="main.js" defer></script>
+<!-- NAV -->
+<nav>
+  <a class="logo" href="#"><span>D</span>iscipline</a>
+  <ul>
+    <li><a href="#problem">Problem</a></li>
+    <li><a href="#how">How It Works</a></li>
+    <li><a href="#features">Features</a></li>
+    <li><a href="#waitlist" class="nav-cta">Join Waitlist</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-left">
+    <div class="hero-eyebrow">Behavioral Discipline Technology</div>
+    <h1 class="hero-title">
+      TAKE BACK<br>
+      <span class="line2">YOUR</span><br>
+      TIME.
+    </h1>
+    <p class="hero-desc">Discipline isn't about tracking how much you scroll — it's about stopping you from doing it. A credit-based system that enforces limits, builds habits, and rewires your digital behavior.</p>
+    <div class="hero-actions">
+      <a href="#waitlist" class="btn-primary">Join the Waitlist →</a>
+      <button class="btn-ghost" onclick="document.getElementById('how').scrollIntoView({behavior:'smooth'})">
+        See How It Works <span class="arrow">→</span>
+      </button>
+    </div>
+  </div>
+  <div class="hero-visual">
+    <div class="phone-glow"></div>
+    <div class="phone">
+      <div class="phone-notch"></div>
+      <div class="phone-screen">
+        <div class="ps-header">Today's Credits</div>
+        <div class="ps-credit">2h <span>14m left</span></div>
+        <div class="ps-sub">3 apps tracked · 1 blocked</div>
+
+        <div class="ps-app">
+          <div class="ps-app-icon" style="background:#1a1a2e;">📸</div>
+          <div class="ps-app-info">
+            <div class="ps-app-name">Instagram</div>
+            <div class="ps-bar-wrap">
+              <div class="ps-bar bar-anim" style="width:87%;background:var(--red);"></div>
+            </div>
+          </div>
+          <div class="ps-app-time">26m/30m</div>
+        </div>
+
+        <div class="ps-app">
+          <div class="ps-app-icon" style="background:#1E293B;">▶️</div>
+          <div class="ps-app-info">
+            <div class="ps-app-name">YouTube</div>
+            <div class="ps-bar-wrap">
+              <div class="ps-bar bar-anim" style="width:53%;background:#e8a000;animation-delay:0.3s"></div>
+            </div>
+          </div>
+          <div class="ps-app-time">24m/45m</div>
+        </div>
+
+        <div class="ps-app">
+          <div class="ps-app-icon" style="background:#0d1f2d;">🐦</div>
+          <div class="ps-app-info">
+            <div class="ps-app-name">Twitter</div>
+            <div class="ps-bar-wrap">
+              <div class="ps-bar bar-anim" style="width:28%;background:#26a269;animation-delay:0.6s"></div>
+            </div>
+          </div>
+          <div class="ps-app-time">8m/30m</div>
+        </div>
+
+        <div class="ps-blocked">
+          <div class="ps-blocked-icon">🔒</div>
+          <div class="ps-blocked-text">Instagram — Limit Reached</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker">
+  <div class="ticker-inner">
+    <span class="ticker-item">Time Credit System <span>✦</span></span>
+    <span class="ticker-item">Real-Time App Blocking <span>✦</span></span>
+    <span class="ticker-item">Build Discipline Daily <span>✦</span></span>
+    <span class="ticker-item">No Easy Bypass <span>✦</span></span>
+    <span class="ticker-item">Behavioral Design <span>✦</span></span>
+    <span class="ticker-item">Android Accessibility Service <span>✦</span></span>
+    <span class="ticker-item">Time Credit System <span>✦</span></span>
+    <span class="ticker-item">Real-Time App Blocking <span>✦</span></span>
+    <span class="ticker-item">Build Discipline Daily <span>✦</span></span>
+    <span class="ticker-item">No Easy Bypass <span>✦</span></span>
+    <span class="ticker-item">Behavioral Design <span>✦</span></span>
+    <span class="ticker-item">Android Accessibility Service <span>✦</span></span>
+  </div>
+</div>
+
+<!-- STATS -->
+<div class="stats">
+  <div class="stat reveal">
+    <div class="stat-num" data-target="3">0</div>
+    <div class="stat-label">hrs avg screen time saved / day</div>
+  </div>
+  <div class="stat reveal">
+    <div class="stat-num" data-target="100">0</div>
+    <div class="stat-label">% enforcement — no soft limits</div>
+  </div>
+  <div class="stat reveal">
+    <div class="stat-num" data-target="21">0</div>
+    <div class="stat-label">days to build a new habit</div>
+  </div>
+  <div class="stat reveal">
+    <div class="stat-num" data-target="0">∞</div>
+    <div class="stat-label">ways to cheat the system</div>
+  </div>
+</div>
+
+<!-- PROBLEM -->
+<section class="section" id="problem">
+  <div class="section-tag">The Problem</div>
+  <h2 class="section-title reveal">YOU KNOW THE<br>PROBLEM.</h2>
+  <p style="color:var(--muted);font-size:16px;line-height:1.7;max-width:560px;" class="reveal">Every screen time app tells you how much you scroll. None of them actually stop you. <strong style="color:var(--white);">Until now.</strong></p>
+
+  <div class="problems">
+    <div class="problem-card reveal">
+      <div class="problem-num">01</div>
+      <div class="problem-icon">📱</div>
+      <div class="problem-title">Endless Scrolling</div>
+      <div class="problem-desc">Social media is engineered to be addictive. Without hard limits, you'll always say "just five more minutes."</div>
+    </div>
+    <div class="problem-card reveal">
+      <div class="problem-num">02</div>
+      <div class="problem-icon">⏰</div>
+      <div class="problem-title">Hours Wasted Daily</div>
+      <div class="problem-desc">The average person loses 4+ hours daily to non-productive apps. That's 60 days a year. Gone.</div>
+    </div>
+    <div class="problem-card reveal">
+      <div class="problem-num">03</div>
+      <div class="problem-icon">🧠</div>
+      <div class="problem-title">Willpower Fails</div>
+      <div class="problem-desc">Self-control is finite. You can't willpower your way out of something designed by billion-dollar engineering teams.</div>
+    </div>
+    <div class="problem-card reveal">
+      <div class="problem-num">04</div>
+      <div class="problem-icon">📊</div>
+      <div class="problem-title">Trackers Don't Help</div>
+      <div class="problem-desc">Knowing you scrolled 3 hours doesn't stop you tomorrow. You need enforcement, not just awareness.</div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how" id="how">
+  <div class="section-tag">How It Works</div>
+  <h2 class="section-title reveal">THE CREDIT<br>SYSTEM.</h2>
+  <div class="steps">
+    <div class="step reveal">
+      <div class="step-num">1</div>
+      <div class="step-icon">⚡</div>
+      <div class="step-title">Assign Credits</div>
+      <div class="step-desc">Give each app a daily time budget. Instagram 30 mins. YouTube 45 mins. You decide what each app is worth.</div>
+    </div>
+    <div class="step reveal">
+      <div class="step-num">2</div>
+      <div class="step-icon">⏳</div>
+      <div class="step-title">Credits Drain</div>
+      <div class="step-desc">Every second you spend on an app costs a credit. Watch the bar drop in real time. Feel the cost of your attention.</div>
+    </div>
+    <div class="step reveal">
+      <div class="step-num">3</div>
+      <div class="step-icon">🔒</div>
+      <div class="step-title">Hard Block</div>
+      <div class="step-desc">When credits hit zero — the app is blocked. Full-screen lock. No bypass. No "ignore for 15 minutes." Done.</div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="section" id="features">
+  <div class="section-tag">Features</div>
+  <h2 class="section-title reveal">BUILT TO<br>ENFORCE.</h2>
+  <div class="features-grid">
+    <div class="feature reveal">
+      <div class="feature-badge">Core</div>
+      <div class="feature-icon">⏳</div>
+      <div class="feature-title">Time Credit System</div>
+      <div class="feature-desc">Allocate daily usage time per app. Creates a real psychological cost for every second of screen time.</div>
+    </div>
+    <div class="feature reveal">
+      <div class="feature-badge">Enforcement</div>
+      <div class="feature-icon">🔒</div>
+      <div class="feature-title">Smart App Blocking</div>
+      <div class="feature-desc">Uses Android Accessibility Service to detect the foreground app and instantly trigger blocks when limits are hit.</div>
+    </div>
+    <div class="feature reveal">
+      <div class="feature-badge">Tracking</div>
+      <div class="feature-icon">📊</div>
+      <div class="feature-title">Real-Time Usage Stats</div>
+      <div class="feature-desc">Tracks usage via system-level stats. Even counts time before you added the app. No loopholes.</div>
+    </div>
+    <div class="feature reveal">
+      <div class="feature-badge">Dashboard</div>
+      <div class="feature-icon">📱</div>
+      <div class="feature-title">Managed Apps View</div>
+      <div class="feature-desc">Visual progress bars for every tracked app. Add or remove apps anytime. Full control at a glance.</div>
+    </div>
+    <div class="feature reveal">
+      <div class="feature-badge">UX</div>
+      <div class="feature-icon">⚡</div>
+      <div class="feature-title">Instant Lock Screen</div>
+      <div class="feature-desc">A full-screen blocking UI with no easy bypass. When you're out — you're out. Period.</div>
+    </div>
+    <div class="feature reveal">
+      <div class="feature-badge">Design</div>
+      <div class="feature-icon">🧠</div>
+      <div class="feature-title">Behavioral Science</div>
+      <div class="feature-desc">Not just technical — psychological. Gamified limits that make you feel the value of time. Builds real discipline.</div>
+    </div>
+  </div>
+</section>
+
+<!-- USP -->
+<section class="usp">
+  <div class="section-tag">Why Discipline</div>
+  <h2 class="section-title reveal">NOT JUST<br>ANOTHER APP.</h2>
+  <div class="usp-list">
+    <div class="usp-item reveal">
+      <div class="usp-check">✅</div>
+      <div class="usp-text">
+        <strong>Active Enforcement, Not Just Tracking</strong>
+        <span>Other apps show you data. Discipline blocks the app. There's a difference.</span>
+      </div>
+    </div>
+    <div class="usp-item reveal">
+      <div class="usp-check">✅</div>
+      <div class="usp-text">
+        <strong>Gamified Credit System</strong>
+        <span>Time feels scarce when it costs something. Credits make discipline feel rewarding.</span>
+      </div>
+    </div>
+    <div class="usp-item reveal">
+      <div class="usp-check">✅</div>
+      <div class="usp-text">
+        <strong>Real-Time Blocking — No Cheating</strong>
+        <span>As soon as credits expire, the block kicks in. No grace period. No bypass.</span>
+      </div>
+    </div>
+    <div class="usp-item reveal">
+      <div class="usp-check">✅</div>
+      <div class="usp-text">
+        <strong>Silent Background Operation</strong>
+        <span>Works quietly in the background. No constant notifications. Just protection.</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WAITLIST / CTA -->
+<section class="cta-section" id="waitlist">
+
+  <!-- background blue glow -->
+  <div class="cta-section::before"></div>
+
+  <div class="section-tag" style="justify-content:center;">Early Access</div>
+
+  <h2 class="cta-title reveal">
+    BE FIRST.<br>
+    <span style="color:var(--accent);">JOIN THE LIST.</span>
+  </h2>
+
+  <p class="cta-desc reveal">We're in final development. Register your spot now — waitlist members get priority access and exclusive beta invites when we launch.</p>
+
+  <!-- Social proof -->
+  <div class="waitlist-proof reveal">
+    <div class="wl-avatars">
+      <div class="wl-av" style="background:#3B82F6;">S</div>
+      <div class="wl-av" style="background:#8B5CF6;">A</div>
+      <div class="wl-av" style="background:#10B981;">R</div>
+      <div class="wl-av" style="background:#F59E0B;">K</div>
+      <div class="wl-av" style="background:#EF4444;">M</div>
+    </div>
+    <span class="wl-count"><strong>1,240+</strong> people already on the waitlist</span>
+  </div>
+
+  <!-- Registration Form -->
+  <div class="waitlist-card reveal" id="waitlistCard">
+
+    <div class="wl-form-group">
+      <!-- Name -->
+      <div class="wl-field">
+        <label class="wl-label">Full Name <span class="wl-req">*</span></label>
+        <input
+          type="text"
+          class="wl-input"
+          id="wlName"
+          placeholder="Your name"
+          autocomplete="off"
+          oninput="liveValidate('wlName')"
+          onblur="liveValidate('wlName')"
+        />
+        <span class="wl-err" id="wlNameErr"></span>
+      </div>
+      <!-- Email -->
+      <div class="wl-field">
+        <label class="wl-label">Email Address <span class="wl-req">*</span></label>
+        <input
+          type="email"
+          class="wl-input"
+          id="wlEmail"
+          placeholder="you@email.com"
+          autocomplete="off"
+          oninput="liveValidate('wlEmail')"
+          onblur="liveValidate('wlEmail')"
+        />
+        <span class="wl-err" id="wlEmailErr"></span>
+      </div>
+    </div>
+
+    <!-- Category chips -->
+    <div class="wl-field" style="margin-bottom:16px;" id="wlCategoryField">
+      <label class="wl-label">Which best describes you? <span class="wl-req">*</span></label>
+      <div class="wl-chips" id="wlChips">
+        <button type="button" class="wl-chip" onclick="selectChip(this)">📱 Heavy Phone User</button>
+        <button type="button" class="wl-chip" onclick="selectChip(this)">🎓 Student</button>
+        <button type="button" class="wl-chip" onclick="selectChip(this)">💼 Professional</button>
+        <button type="button" class="wl-chip" onclick="selectChip(this)">👨‍👩‍👧 Parent</button>
+      </div>
+      <span class="wl-err" id="wlCategoryErr"></span>
+    </div>
+
+    <!-- Struggle dropdown -->
+    <div class="wl-field" style="margin-bottom:24px;">
+      <label class="wl-label">Biggest screen time struggle <span class="wl-req">*</span></label>
+      <select
+        class="wl-input wl-select"
+        id="wlStruggle"
+        onchange="liveValidate('wlStruggle')"
+      >
+        <option value="" disabled selected>Select one...</option>
+        <option>Endless scrolling on social media</option>
+        <option>Wasting time on YouTube / Reels</option>
+        <option>Can't focus on work or studies</option>
+        <option>Screen time before sleep</option>
+        <option>General lack of self-control</option>
+      </select>
+      <span class="wl-err" id="wlStruggleErr"></span>
+    </div>
+
+    <!-- Submit -->
+    <button class="wl-submit-btn" id="wlSubmitBtn" onclick="submitWaitlist()">
+      <span id="wlBtnText">🚀 Register for Early Access</span>
+      <span id="wlBtnLoader" style="display:none;">⏳ Registering...</span>
+    </button>
+
+    <p class="wl-fine-print">
+      <span class="wl-req">*</span> All fields required &nbsp;·&nbsp; Free during beta &nbsp;·&nbsp; Android only &nbsp;·&nbsp; No spam, ever
+    </p>
+
+  </div>
+
+  <!-- Success State -->
+  <div class="waitlist-success" id="waitlistSuccess">
+    <div class="ws-icon">✓</div>
+    <h3 class="ws-title">You're on the list!</h3>
+    <p class="ws-desc">We'll email you the moment Discipline is ready for beta. Keep an eye on your inbox.</p>
+    <div class="ws-number" id="wsNumber">You are on the waitlist</div>
+    <div class="ws-share">
+      <span>Share with friends →</span>
+      <button class="ws-share-btn" onclick="copyLink()">📋 Copy Link</button>
+    </div>
+  </div>
+
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo"><span>D</span>iscipline</div>
+  <div class="footer-copy">© 2025 Discipline App. All rights reserved.</div>
+</footer>
+
+<!-- ══════════════════════════════════════
+     COMING SOON OVERLAY PAGE
+     Toggle with: showComingSoon() / hideComingSoon()
+     Or set SHOW_COMING_SOON = true to auto-show on load
+════════════════════════════════════════ -->
+<div id="coming-soon" class="cs-overlay" aria-hidden="true">
+
+  <!-- animated grid background -->
+  <div class="cs-grid"></div>
+
+  <!-- floating particles -->
+  <div class="cs-particles" id="csParticles"></div>
+
+  <!-- close button (only visible when used as overlay) -->
+  <button class="cs-close" onclick="hideComingSoon()" title="Back to site">✕</button>
+
+  <div class="cs-content">
+
+    <!-- eyebrow -->
+    <div class="cs-eyebrow">
+      <span class="cs-dot"></span>
+      <span class="cs-dot"></span>
+      <span class="cs-dot"></span>
+      In Development
+    </div>
+
+    <!-- logo -->
+    <div class="cs-logo"><span>D</span>iscipline</div>
+
+    <!-- headline -->
+    <h1 class="cs-headline">
+      COMING<br>
+      <span class="cs-headline-red">SOON.</span>
+    </h1>
+
+    <p class="cs-sub">We're building something that will change how you use your phone.<br>Be the first to know when it drops.</p>
+
+    <!-- countdown -->
+    <div class="cs-countdown" id="countdown">
+      <div class="cs-unit">
+        <div class="cs-num" id="cd-days">00</div>
+        <div class="cs-label">Days</div>
+      </div>
+      <div class="cs-sep">:</div>
+      <div class="cs-unit">
+        <div class="cs-num" id="cd-hours">00</div>
+        <div class="cs-label">Hours</div>
+      </div>
+      <div class="cs-sep">:</div>
+      <div class="cs-unit">
+        <div class="cs-num" id="cd-mins">00</div>
+        <div class="cs-label">Minutes</div>
+      </div>
+      <div class="cs-sep">:</div>
+      <div class="cs-unit">
+        <div class="cs-num" id="cd-secs">00</div>
+        <div class="cs-label">Seconds</div>
+      </div>
+    </div>
+
+    <!-- email form -->
+    <div class="cs-form-wrap">
+      <div class="cs-form" id="csForm">
+        <input
+          type="email"
+          class="cs-input"
+          id="csEmail"
+          placeholder="your@email.com"
+          autocomplete="off"
+        />
+        <button class="cs-submit" onclick="submitEmail()">Notify Me →</button>
+      </div>
+      <div class="cs-success" id="csSuccess">
+        <span class="cs-success-icon">✓</span>
+        <span>You're on the list. We'll reach out soon.</span>
+      </div>
+      <p class="cs-privacy">No spam. No ads. Just one email when we launch.</p>
+    </div>
+
+    <!-- progress bar -->
+    <div class="cs-progress-wrap">
+      <div class="cs-progress-meta">
+        <span class="cs-progress-label">Development Progress</span>
+        <span class="cs-progress-pct">68%</span>
+      </div>
+      <div class="cs-progress-track">
+        <div class="cs-progress-fill"></div>
+      </div>
+    </div>
+
+    <!-- milestones -->
+    <div class="cs-milestones">
+      <div class="cs-milestone done">
+        <div class="cs-ms-dot"></div>
+        <div class="cs-ms-text">
+          <strong>Core Engine</strong>
+          <span>Credit system + blocking logic</span>
+        </div>
+        <div class="cs-ms-badge">✓ Done</div>
+      </div>
+      <div class="cs-milestone done">
+        <div class="cs-ms-dot"></div>
+        <div class="cs-ms-text">
+          <strong>Android Accessibility Service</strong>
+          <span>Real-time foreground detection</span>
+        </div>
+        <div class="cs-ms-badge">✓ Done</div>
+      </div>
+      <div class="cs-milestone active">
+        <div class="cs-ms-dot"></div>
+        <div class="cs-ms-text">
+          <strong>UI / UX Polish</strong>
+          <span>Dashboard & lock screen design</span>
+        </div>
+        <div class="cs-ms-badge active">In Progress</div>
+      </div>
+      <div class="cs-milestone">
+        <div class="cs-ms-dot"></div>
+        <div class="cs-ms-text">
+          <strong>Beta Testing</strong>
+          <span>Internal & closed beta</span>
+        </div>
+        <div class="cs-ms-badge upcoming">Upcoming</div>
+      </div>
+      <div class="cs-milestone">
+        <div class="cs-ms-dot"></div>
+        <div class="cs-ms-text">
+          <strong>Play Store Launch</strong>
+          <span>Public release</span>
+        </div>
+        <div class="cs-ms-badge upcoming">Soon</div>
+      </div>
+    </div>
+
+    <!-- social / back link -->
+    <div class="cs-footer-row">
+      <button class="cs-back-btn" onclick="hideComingSoon()">← Back to Site</button>
+      <div class="cs-socials">
+        <a href="#" class="cs-social-link">Twitter</a>
+        <span>·</span>
+        <a href="#" class="cs-social-link">Instagram</a>
+        <span>·</span>
+        <a href="#" class="cs-social-link">LinkedIn</a>
+      </div>
+    </div>
+
+  </div><!-- /cs-content -->
+</div><!-- /coming-soon -->
+
+<!-- Trigger button (floating) -->
+<button class="cs-trigger-btn" onclick="showComingSoon()" title="Coming Soon Page">
+  ⏳ <span>Coming Soon</span>
+</button>
+
+<style>
+/* ── WAITLIST FORM ── */
+.waitlist-proof {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  justify-content: center;
+  margin-bottom: 36px;
+}
+.wl-avatars { display: flex; }
+.wl-av {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  border: 2px solid var(--black);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700; color: #fff;
+  margin-left: -8px;
+}
+.wl-avatars .wl-av:first-child { margin-left: 0; }
+.wl-count { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--muted); letter-spacing: 0.04em; }
+.wl-count strong { color: var(--white); }
+
+.waitlist-card {
+  max-width: 540px; margin: 0 auto;
+  background: var(--grey);
+  border: 1px solid rgba(59,130,246,0.15);
+  border-radius: 8px; padding: 36px 40px;
+  text-align: left; position: relative; z-index: 1;
+  box-shadow: 0 0 60px rgba(59,130,246,0.07);
+}
+.wl-form-group { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+.wl-field { display: flex; flex-direction: column; gap: 6px; }
+.wl-label { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+.wl-input {
+  background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 4px; padding: 12px 14px;
+  color: var(--white); font-family: 'Instrument Sans', sans-serif;
+  font-size: 14px; outline: none; transition: border-color 0.2s; width: 100%;
+}
+.wl-input::placeholder { color: #475569; }
+.wl-input:focus { border-color: rgba(59,130,246,0.5); }
+.wl-select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2394A3B8' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 14px center; cursor: pointer;
+}
+.wl-select option { background: #1E293B; color: var(--white); }
+.wl-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+.wl-chip {
+  background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1);
+  color: var(--muted); font-family: 'DM Mono', monospace; font-size: 11px;
+  letter-spacing: 0.04em; padding: 7px 14px; border-radius: 100px;
+  cursor: pointer; transition: all 0.2s;
+}
+.wl-chip:hover { border-color: rgba(59,130,246,0.4); color: var(--white); }
+.wl-chip.active { background: rgba(59,130,246,0.15); border-color: rgba(59,130,246,0.5); color: #93C5FD; }
+.wl-submit-btn {
+  width: 100%; background: var(--accent); color: var(--white); border: none;
+  border-radius: 4px; padding: 16px; font-family: 'DM Mono', monospace;
+  font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase;
+  cursor: pointer; transition: background 0.2s, transform 0.15s;
+  position: relative; overflow: hidden;
+}
+.wl-submit-btn::after { content: ''; position: absolute; inset: 0; background: rgba(255,255,255,0.08); opacity: 0; transition: opacity 0.2s; }
+.wl-submit-btn:hover { background: #2563EB; }
+.wl-submit-btn:hover::after { opacity: 1; }
+.wl-submit-btn:active { transform: scale(0.99); }
+.wl-fine-print { font-family: 'DM Mono', monospace; font-size: 10px; color: #475569; text-align: center; margin-top: 14px; letter-spacing: 0.06em; }
+
+/* ── Validation states ── */
+.wl-req {
+  color: var(--red);
+  font-size: 11px;
+  margin-left: 2px;
+}
+
+.wl-err {
+  display: block;
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.05em;
+  color: var(--red);
+  margin-top: 5px;
+  min-height: 14px;
+  opacity: 0;
+  transform: translateY(-4px);
+  transition: opacity 0.2s, transform 0.2s;
+}
+
+.wl-err.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.wl-input.error {
+  border-color: rgba(239,68,68,0.65) !important;
+  background: rgba(239,68,68,0.04);
+}
+
+.wl-input.success {
+  border-color: rgba(16,185,129,0.5) !important;
+  background: rgba(16,185,129,0.03);
+}
+
+/* success tick icon inside input */
+.wl-field { position: relative; }
+
+.wl-input.success + .wl-err::before {
+  content: none;
+}
+
+/* chips error state */
+.wl-chips.error .wl-chip:not(.active) {
+  border-color: rgba(239,68,68,0.4);
+}
+
+/* shake animation on submit with errors */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  15%       { transform: translateX(-6px); }
+  30%       { transform: translateX(6px); }
+  45%       { transform: translateX(-4px); }
+  60%       { transform: translateX(4px); }
+  75%       { transform: translateX(-2px); }
+  90%       { transform: translateX(2px); }
+}
+
+.waitlist-card.shake {
+  animation: shake 0.45s ease;
+}
+
+/* submit btn disabled look */
+.wl-submit-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.waitlist-success {
+  display: none; flex-direction: column; align-items: center;
+  max-width: 440px; margin: 0 auto; text-align: center;
+  position: relative; z-index: 1; animation: fadeUp 0.6s forwards;
+}
+.ws-icon {
+  width: 72px; height: 72px;
+  background: rgba(59,130,246,0.12); border: 2px solid rgba(59,130,246,0.35);
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-size: 32px; color: var(--accent); margin-bottom: 20px;
+}
+.ws-title { font-family: 'Bebas Neue', sans-serif; font-size: 44px; letter-spacing: 0.04em; margin-bottom: 12px; }
+.ws-desc { font-size: 15px; color: var(--muted); line-height: 1.7; margin-bottom: 24px; }
+.ws-number {
+  font-family: 'DM Mono', monospace; font-size: 13px; color: var(--accent);
+  background: rgba(59,130,246,0.08); border: 1px solid rgba(59,130,246,0.2);
+  padding: 10px 24px; border-radius: 4px; margin-bottom: 20px; letter-spacing: 0.06em;
+}
+.ws-share { display: flex; align-items: center; gap: 12px; font-family: 'DM Mono', monospace; font-size: 12px; color: var(--muted); }
+.ws-share-btn {
+  background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+  color: var(--white); font-family: 'DM Mono', monospace; font-size: 11px;
+  padding: 8px 16px; border-radius: 4px; cursor: pointer; transition: all 0.2s; letter-spacing: 0.06em;
+}
+.ws-share-btn:hover { border-color: rgba(59,130,246,0.4); color: var(--accent); }
+
+@media (max-width: 600px) {
+  .wl-form-group { grid-template-columns: 1fr; }
+  .waitlist-card { padding: 24px 20px; }
+}
+
+/* ══ COMING SOON STYLES ══ */
+
+.cs-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9000;
+  background: var(--black);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow-y: auto;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s ease;
+}
+
+.cs-overlay.active {
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* grid background */
+.cs-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(59,130,246,0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(59,130,246,0.05) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none;
+}
+
+/* particles */
+.cs-particles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.cs-particle {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background: var(--red);
+  border-radius: 50%;
+  opacity: 0;
+  animation: particleFly var(--dur, 6s) var(--delay, 0s) infinite ease-in-out;
+}
+
+@keyframes particleFly {
+  0%   { opacity: 0; transform: translateY(100vh) scale(0); }
+  10%  { opacity: 0.6; }
+  90%  { opacity: 0.3; }
+  100% { opacity: 0; transform: translateY(-20vh) scale(1.5); }
+}
+
+/* close button */
+.cs-close {
+  position: fixed;
+  top: 24px;
+  right: 32px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: var(--muted);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  z-index: 10;
+}
+
+.cs-close:hover {
+  background: rgba(230,50,37,0.15);
+  color: var(--white);
+  border-color: rgba(230,50,37,0.4);
+}
+
+/* content wrapper */
+.cs-content {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 680px;
+  padding: 80px 40px 60px;
+  text-align: center;
+}
+
+/* eyebrow */
+.cs-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 24px;
+  border: 1px solid rgba(255,255,255,0.08);
+  padding: 8px 18px;
+  border-radius: 100px;
+}
+
+.cs-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--red);
+  animation: pulse 1.4s infinite;
+}
+
+.cs-dot:nth-child(2) { animation-delay: 0.2s; }
+.cs-dot:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.3; transform: scale(0.6); }
+}
+
+/* logo */
+.cs-logo {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 18px;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  margin-bottom: 20px;
+}
+.cs-logo span { color: var(--red); }
+
+/* headline */
+.cs-headline {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(80px, 14vw, 150px);
+  line-height: 0.88;
+  letter-spacing: 0.02em;
+  margin-bottom: 24px;
+  color: var(--white);
+  animation: csSlideIn 0.9s ease forwards;
+}
+
+.cs-headline-red {
+  color: var(--accent);
+  display: block;
+  position: relative;
+}
+
+.cs-headline-red::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 3px;
+  background: var(--accent);
+}
+
+@keyframes csSlideIn {
+  from { opacity: 0; transform: translateY(40px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* sub */
+.cs-sub {
+  font-size: 15px;
+  color: var(--muted);
+  line-height: 1.75;
+  margin-bottom: 40px;
+}
+
+/* countdown */
+.cs-countdown {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 44px;
+}
+
+.cs-unit {
+  text-align: center;
+  background: var(--grey);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 4px;
+  padding: 16px 20px;
+  min-width: 80px;
+  position: relative;
+  overflow: hidden;
+}
+
+.cs-unit::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: rgba(59,130,246,0.4);
+}
+
+.cs-num {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 44px;
+  line-height: 1;
+  color: var(--white);
+  margin-bottom: 4px;
+  transition: all 0.2s;
+}
+
+.cs-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.cs-sep {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 36px;
+  color: var(--accent);
+  opacity: 0.5;
+  margin-bottom: 16px;
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 0.1; }
+}
+
+/* form */
+.cs-form-wrap { margin-bottom: 44px; }
+
+.cs-form {
+  display: flex;
+  gap: 0;
+  max-width: 440px;
+  margin: 0 auto 12px;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 3px;
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+
+.cs-form:focus-within { border-color: rgba(59,130,246,0.5); }
+
+.cs-input {
+  flex: 1;
+  background: rgba(255,255,255,0.04);
+  border: none;
+  outline: none;
+  padding: 14px 18px;
+  color: var(--white);
+  font-family: 'DM Mono', monospace;
+  font-size: 13px;
+  min-width: 0;
+}
+
+.cs-input::placeholder { color: var(--muted); }
+
+.cs-submit {
+  background: var(--accent);
+  border: none;
+  color: var(--white);
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  padding: 14px 22px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.2s;
+  flex-shrink: 0;
+}
+
+.cs-submit:hover { background: #2563EB; }
+
+.cs-success {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  max-width: 440px;
+  margin: 0 auto 12px;
+  background: rgba(39,180,80,0.1);
+  border: 1px solid rgba(39,180,80,0.3);
+  border-radius: 3px;
+  padding: 14px 20px;
+  color: #27b450;
+  font-family: 'DM Mono', monospace;
+  font-size: 13px;
+}
+
+.cs-success-icon {
+  font-size: 18px;
+  background: rgba(39,180,80,0.15);
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.cs-privacy {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: #475569;
+  letter-spacing: 0.06em;
+}
+
+/* progress */
+.cs-progress-wrap {
+  max-width: 480px;
+  margin: 0 auto 36px;
+  text-align: left;
+}
+
+.cs-progress-meta {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.cs-progress-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.cs-progress-pct {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 20px;
+  color: var(--red);
+  line-height: 1;
+}
+
+.cs-progress-track {
+  height: 4px;
+  background: var(--grey);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.cs-progress-fill {
+  height: 100%;
+  width: 0;
+  background: linear-gradient(90deg, #1D4ED8, var(--accent), #60A5FA);
+  border-radius: 4px;
+  transition: width 1.8s cubic-bezier(0.16,1,0.3,1);
+}
+
+/* milestones */
+.cs-milestones {
+  max-width: 480px;
+  margin: 0 auto 44px;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.cs-milestone {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  opacity: 0.4;
+  transition: opacity 0.2s;
+}
+
+.cs-milestone:last-child { border-bottom: none; }
+.cs-milestone.done, .cs-milestone.active { opacity: 1; }
+.cs-milestone:hover { opacity: 0.9; }
+
+.cs-ms-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--grey2);
+  border: 2px solid var(--muted);
+  flex-shrink: 0;
+}
+
+.cs-milestone.done .cs-ms-dot {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.cs-milestone.active .cs-ms-dot {
+  background: transparent;
+  border-color: var(--accent);
+  animation: msPulse 1.2s infinite;
+}
+
+@keyframes msPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(59,130,246,0.5); }
+  50% { box-shadow: 0 0 0 5px rgba(59,130,246,0); }
+}
+
+.cs-ms-text { flex: 1; }
+
+.cs-ms-text strong {
+  display: block;
+  font-size: 13px;
+  color: var(--white);
+  margin-bottom: 2px;
+}
+
+.cs-ms-text span {
+  font-size: 11px;
+  color: var(--muted);
+  font-family: 'DM Mono', monospace;
+}
+
+.cs-ms-badge {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #26a269;
+  border: 1px solid rgba(38,162,105,0.3);
+  padding: 3px 8px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.cs-ms-badge.active {
+  color: #e8a000;
+  border-color: rgba(232,160,0,0.3);
+}
+
+.cs-ms-badge.upcoming {
+  color: var(--muted);
+  border-color: rgba(102,102,102,0.3);
+}
+
+/* footer row */
+.cs-footer-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.cs-back-btn {
+  background: none;
+  border: 1px solid rgba(255,255,255,0.1);
+  color: var(--muted);
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 8px 16px;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.cs-back-btn:hover {
+  border-color: rgba(59,130,246,0.4);
+  color: var(--white);
+}
+
+.cs-socials {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  color: #475569;
+}
+
+.cs-social-link {
+  color: var(--muted);
+  text-decoration: none;
+  letter-spacing: 0.06em;
+  transition: color 0.2s;
+}
+
+.cs-social-link:hover { color: var(--accent); }
+
+/* ── Floating trigger button ── */
+.cs-trigger-btn {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  z-index: 8000;
+  background: var(--accent);
+  color: var(--white);
+  border: none;
+  border-radius: 100px;
+  padding: 12px 22px;
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 8px 32px rgba(59,130,246,0.35);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.cs-trigger-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px rgba(59,130,246,0.5);
+}
+
+/* ── Mobile ── */
+@media (max-width: 600px) {
+  .cs-content { padding: 80px 20px 40px; }
+  .cs-unit { min-width: 60px; padding: 12px 14px; }
+  .cs-num { font-size: 32px; }
+  .cs-countdown { gap: 4px; }
+  .cs-footer-row { flex-direction: column; gap: 16px; }
+  .cs-headline { font-size: 80px; }
+}
+</style>
+
+
+</body>
+</html>
