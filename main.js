@@ -274,7 +274,7 @@ window.submitWaitlist = async function () {
   }
 
   // ── copy link ──
-  function copyLink() {
+  window.copyLink = function() {
     const url = window.location.href.split('#')[0] + '#waitlist';
     navigator.clipboard.writeText(url).then(() => {
       const btn = document.querySelector('.ws-share-btn');
@@ -298,7 +298,7 @@ window.submitWaitlist = async function () {
   // Launch date — change this to your actual launch date
   const LAUNCH_DATE = new Date('2025-10-01T00:00:00');
 
-  function showComingSoon() {
+  window.showComingSoon = function() {
     const overlay = document.getElementById('coming-soon');
     overlay.classList.add('active');
     overlay.setAttribute('aria-hidden', 'false');
@@ -308,7 +308,7 @@ window.submitWaitlist = async function () {
     spawnParticles();
   }
 
-  function hideComingSoon() {
+  window.hideComingSoon = function() {
     const overlay = document.getElementById('coming-soon');
     overlay.classList.remove('active');
     overlay.setAttribute('aria-hidden', 'true');
@@ -316,7 +316,7 @@ window.submitWaitlist = async function () {
   }
 
   // ── COUNTDOWN ──
-  function startCountdown() {
+  window.startCountdown = function() {
     function update() {
       const now = new Date();
       const diff = LAUNCH_DATE - now;
@@ -342,14 +342,14 @@ window.submitWaitlist = async function () {
   }
 
   // ── PROGRESS BAR ──
-  function animateProgress() {
+  window.animateProgress = function() {
     setTimeout(() => {
       document.querySelector('.cs-progress-fill').style.width = '68%';
     }, 300);
   }
 
   // ── PARTICLES ──
-  function spawnParticles() {
+  window.spawnParticles = function() {
     const container = document.getElementById('csParticles');
     if (container.children.length > 0) return; // already spawned
     for (let i = 0; i < 30; i++) {
